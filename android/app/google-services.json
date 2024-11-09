@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "779853414912",
+    "project_id": "veggiefresh-5c80e",
+    "storage_bucket": "veggiefresh-5c80e.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:779853414912:android:d42f82f6721b9b5e9bcee5",
+        "android_client_info": {
+          "package_name": "com.veggiefresh.veggiefresh"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyALgNeDkYImNCyQ6BGjghhneaP7k-Deq04"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
