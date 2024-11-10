@@ -1,9 +1,11 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:veggiefresh/app/modules/home/views/chat/chat_view.dart';
+import 'package:veggiefresh/app/modules/home/views/profile/profile_view.dart';
 import '../../../core/theme/theme.dart';
 import '../controllers/main_controller.dart';
 import 'home_view.dart';
+import 'wishlist_view.dart';
 
 class MainView extends GetView<MainController> {
   const MainView({Key? key}) : super(key: key);
@@ -12,9 +14,9 @@ class MainView extends GetView<MainController> {
   Widget build(BuildContext context) {
     Widget cartButton() {
       return FloatingActionButton(
-        shape: CircleBorder(),
+        shape: const CircleBorder(),
         onPressed: () {
-          Navigator.pushNamed(context, '/cart');
+          Get.toNamed('/cart'); // Changed to GetX navigation
         },
         backgroundColor: secondaryColor,
         child: Image.asset(
@@ -26,108 +28,98 @@ class MainView extends GetView<MainController> {
 
     Widget customBottomNav() {
       return ClipRRect(
-        borderRadius: BorderRadius.vertical(
+        borderRadius: const BorderRadius.vertical(
           top: Radius.circular(30),
         ),
         child: BottomAppBar(
-          color: Color.fromARGB(255, 33, 35, 44),
-          shape: CircularNotchedRectangle(),
+          color: const Color.fromARGB(255, 33, 35, 44),
+          shape: const CircularNotchedRectangle(),
           notchMargin: 10,
           clipBehavior: Clip.antiAlias,
-          child: BottomNavigationBar(
-            currentIndex: pageProvider.currentIndex,
-            onTap: (value) {
-              print(value);
-              pageProvider.currentIndex = value;
-            },
-            backgroundColor: backgroundColor4,
-            type: BottomNavigationBarType.fixed,
-            elevation: 0,
-            items: [
-              BottomNavigationBarItem(
-                icon: Padding(
-                  padding: const EdgeInsets.only(right: 20),
-                  child: Image.asset(
-                    'assets/icon_home.png',
-                    width: 21,
-                    color: pageProvider.currentIndex == 0
-                        ? primaryColor
-                        : Color(0xff808191),
+          child: Obx(() => BottomNavigationBar(
+                currentIndex: controller.currentIndex.value,
+                onTap: (value) {
+                  controller.changePage(value);
+                },
+                backgroundColor: backgroundColor4,
+                type: BottomNavigationBarType.fixed,
+                elevation: 0,
+                items: [
+                  BottomNavigationBarItem(
+                    icon: Padding(
+                      padding: const EdgeInsets.only(right: 20),
+                      child: Image.asset(
+                        'assets/icon_home.png',
+                        width: 21,
+                        color: controller.currentIndex.value == 0
+                            ? primaryColor
+                            : const Color(0xff808191),
+                      ),
+                    ),
+                    label: '',
                   ),
-                ),
-                label: '',
-              ),
-              BottomNavigationBarItem(
-                icon: Padding(
-                  padding: const EdgeInsets.only(right: 50),
-                  child: Image.asset(
-                    'assets/icon_chat.png',
-                    width: 20,
-                    color: pageProvider.currentIndex == 1
-                        ? primaryColor
-                        : Color(0xff808191),
+                  BottomNavigationBarItem(
+                    icon: Padding(
+                      padding: const EdgeInsets.only(right: 50),
+                      child: Image.asset(
+                        'assets/icon_chat.png',
+                        width: 20,
+                        color: controller.currentIndex.value == 1
+                            ? primaryColor
+                            : const Color(0xff808191),
+                      ),
+                    ),
+                    label: '',
                   ),
-                ),
-                label: '',
-              ),
-              BottomNavigationBarItem(
-                icon: Padding(
-                  padding: const EdgeInsets.only(left: 50),
-                  child: Image.asset(
-                    'assets/icon_whislist.png',
-                    width: 20,
-                    color: pageProvider.currentIndex == 2
-                        ? primaryColor
-                        : Color(0xff808191),
+                  BottomNavigationBarItem(
+                    icon: Padding(
+                      padding: const EdgeInsets.only(left: 50),
+                      child: Image.asset(
+                        'assets/icon_whislist.png',
+                        width: 20,
+                        color: controller.currentIndex.value == 2
+                            ? primaryColor
+                            : const Color(0xff808191),
+                      ),
+                    ),
+                    label: '',
                   ),
-                ),
-                label: '',
-              ),
-              BottomNavigationBarItem(
-                icon: Padding(
-                  padding: const EdgeInsets.only(left: 20),
-                  child: Image.asset(
-                    'assets/icon_profile.png',
-                    width: 18,
-                    color: pageProvider.currentIndex == 3
-                        ? primaryColor
-                        : Color(0xff808191),
+                  BottomNavigationBarItem(
+                    icon: Padding(
+                      padding: const EdgeInsets.only(left: 20),
+                      child: Image.asset(
+                        'assets/icon_profile.png',
+                        width: 18,
+                        color: controller.currentIndex.value == 3
+                            ? primaryColor
+                            : const Color(0xff808191),
+                      ),
+                    ),
+                    label: '',
                   ),
-                ),
-                label: '',
-              ),
-            ],
-          ),
+                ],
+              )),
         ),
       );
     }
 
-    Widget body() {
-      switch (pageProvider.currentIndex) {
-        case 0:
-          return HomeView();
-          break;
-        case 1:
-          return ChatView();
-          break;
-        case 2:
-          return WishlistPage();
-          break;
-        case 3:
-          return ProfilePage();
-          break;
-        default:
-          return HomePage();
-      }
-    }
-
-    return Scaffold(
-      backgroundColor:
-          pageProvider.currentIndex == 0 ? backgroundColor1 : backgroundColor3,
-      floatingActionButton: cartButton(),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      bottomNavigationBar: customBottomNav(),
-      body: body(),
-    );
+    return Obx(() => Scaffold(
+          backgroundColor: controller.currentIndex.value == 0
+              ? backgroundColor1
+              : backgroundColor3,
+          floatingActionButton: cartButton(),
+          floatingActionButtonLocation:
+              FloatingActionButtonLocation.centerDocked,
+          bottomNavigationBar: customBottomNav(),
+          body: IndexedStack(
+            index: controller.currentIndex.value,
+            children: [
+              HomeView(),
+              ChatView(),
+              WishlistView(),
+              ProfileView(),
+            ],
+          ),
+        ));
   }
 }

@@ -1,23 +1,27 @@
+// lib/modules/home/controllers/home_controller.dart
 import 'package:get/get.dart';
+import 'package:veggiefresh/app/data/models/product_model.dart';
+import 'package:veggiefresh/app/data/repositories/product_repository.dart';
+import '../../../data/models/user_model.dart';
 
 class HomeController extends GetxController {
-  //TODO: Implement HomeController
+  final currentUser =
+      UserModel(id: null, name: '', email: '', username: '').obs;
+  final products = <ProductModel>[].obs;
+  final ProductRepository productService = Get.find<ProductRepository>();
 
-  final count = 0.obs;
   @override
   void onInit() {
     super.onInit();
+    fetchProducts();
   }
 
-  @override
-  void onReady() {
-    super.onReady();
+  void fetchProducts() async {
+    try {
+      var fetchedProducts = await productService.getProducts();
+      products.assignAll(fetchedProducts);
+    } catch (e) {
+      print("Error fetching products: $e");
+    }
   }
-
-  @override
-  void onClose() {
-    super.onClose();
-  }
-
-  void increment() => count.value++;
 }

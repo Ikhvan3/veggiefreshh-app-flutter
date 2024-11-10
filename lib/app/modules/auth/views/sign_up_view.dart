@@ -346,6 +346,8 @@ class SignUpView extends GetView<AuthController> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               header(),
+              nameInput(),
+              usernameInput(),
               emailInput(),
               passwordInput(),
               Obx(() => controller.isLoading.value

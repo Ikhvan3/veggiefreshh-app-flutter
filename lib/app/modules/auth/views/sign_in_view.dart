@@ -158,7 +158,7 @@ class SignInView extends GetView<AuthController> {
         child: TextButton(
           onPressed: () async {
             if (await controller.login()) {
-              Get.offNamed('/home');
+              Get.offNamed('/main');
             } else {
               Get.snackbar(
                 'Error',

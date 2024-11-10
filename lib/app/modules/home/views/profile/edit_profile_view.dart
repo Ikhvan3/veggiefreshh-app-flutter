@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../../core/theme/theme.dart';
-import '../../controllers/main_controller.dart';
+import '../../controllers/edit_profile_controller.dart';
 
-class EditProfileView extends GetView<MainController> {
+class EditProfileView extends GetView<EditProfileController> {
   const EditProfileView({Key? key}) : super(key: key);
 
   @override
@@ -16,11 +16,9 @@ class EditProfileView extends GetView<MainController> {
           leading: IconButton(
             icon: const Icon(
               Icons.close,
-              color: Color.fromARGB(255, 255, 255, 255),
+              color: Colors.white,
             ),
-            onPressed: () {
-              Navigator.pop(context);
-            },
+            onPressed: () => Get.back(),
           ),
           backgroundColor: backgroundColor1,
           elevation: 0,
@@ -31,7 +29,7 @@ class EditProfileView extends GetView<MainController> {
           ),
           actions: [
             IconButton(
-              onPressed: () {},
+              onPressed: controller.updateProfile,
               icon: Icon(
                 Icons.check,
                 color: primaryColor,
@@ -44,27 +42,20 @@ class EditProfileView extends GetView<MainController> {
 
     Widget nameInput() {
       return Container(
-        margin: EdgeInsets.only(
-          top: 30,
-        ),
+        margin: EdgeInsets.only(top: 30),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               'Name',
-              style: secondaryTextStyle.copyWith(
-                fontSize: 13,
-              ),
+              style: secondaryTextStyle.copyWith(fontSize: 13),
             ),
-            TextFormField(
+            TextField(
+              controller: controller.nameController,
               style: primaryTextStyle,
               decoration: InputDecoration(
-                hintText: user.name,
-                hintStyle: primaryTextStyle,
                 enabledBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(
-                    color: subtitleColor,
-                  ),
+                  borderSide: BorderSide(color: subtitleColor),
                 ),
               ),
             ),
@@ -75,27 +66,20 @@ class EditProfileView extends GetView<MainController> {
 
     Widget usernameInput() {
       return Container(
-        margin: EdgeInsets.only(
-          top: 30,
-        ),
+        margin: EdgeInsets.only(top: 30),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               'Username',
-              style: secondaryTextStyle.copyWith(
-                fontSize: 13,
-              ),
+              style: secondaryTextStyle.copyWith(fontSize: 13),
             ),
-            TextFormField(
+            TextField(
+              controller: controller.usernameController,
               style: primaryTextStyle,
               decoration: InputDecoration(
-                hintText: '@${user.username}',
-                hintStyle: primaryTextStyle,
                 enabledBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(
-                    color: subtitleColor,
-                  ),
+                  borderSide: BorderSide(color: subtitleColor),
                 ),
               ),
             ),
@@ -106,27 +90,20 @@ class EditProfileView extends GetView<MainController> {
 
     Widget emailInput() {
       return Container(
-        margin: EdgeInsets.only(
-          top: 30,
-        ),
+        margin: EdgeInsets.only(top: 30),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               'Email',
-              style: secondaryTextStyle.copyWith(
-                fontSize: 13,
-              ),
+              style: secondaryTextStyle.copyWith(fontSize: 13),
             ),
-            TextFormField(
+            TextField(
+              controller: controller.emailController,
               style: primaryTextStyle,
               decoration: InputDecoration(
-                hintText: user.email,
-                hintStyle: primaryTextStyle,
                 enabledBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(
-                    color: subtitleColor,
-                  ),
+                  borderSide: BorderSide(color: subtitleColor),
                 ),
               ),
             ),
@@ -138,28 +115,27 @@ class EditProfileView extends GetView<MainController> {
     Widget content() {
       return Container(
         width: double.infinity,
-        padding: EdgeInsets.symmetric(
-          horizontal: defaultMargin,
-        ),
+        padding: EdgeInsets.symmetric(horizontal: defaultMargin),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Container(
-              width: 100,
-              height: 100,
-              margin: EdgeInsets.only(
-                top: defaultMargin,
-              ),
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                image: DecorationImage(
-                  fit: BoxFit.fill,
-                  image: NetworkImage(
-                    user.profilePhotoUrl.toString(),
+            Obx(() {
+              final user = controller.user.value;
+              return Container(
+                width: 100,
+                height: 100,
+                margin: EdgeInsets.only(top: defaultMargin),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  image: DecorationImage(
+                    fit: BoxFit.fill,
+                    image: NetworkImage(
+                      user?.profilePhotoUrl ?? '',
+                    ),
                   ),
                 ),
-              ),
-            ),
+              );
+            }),
             nameInput(),
             usernameInput(),
             emailInput(),

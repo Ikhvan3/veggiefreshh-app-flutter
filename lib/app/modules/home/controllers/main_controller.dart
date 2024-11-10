@@ -1,11 +1,11 @@
 import 'package:get/get.dart';
 
 class MainController extends GetxController {
-  final _selectedIndex = 0.obs;
-  get selectedIndex => _selectedIndex.value;
-  set selectedIndex(value) => _selectedIndex.value = value;
+  // Observable variable untuk current index
+  RxInt currentIndex = 0.obs;
 
+  // Method untuk mengubah halaman
   void changePage(int index) {
-    selectedIndex = index;
+    currentIndex.value = index;
   }
 }

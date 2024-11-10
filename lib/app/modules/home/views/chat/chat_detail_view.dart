@@ -4,27 +4,15 @@ import 'package:get/get.dart';
 import '../../../../core/theme/theme.dart';
 import '../../../../data/models/message_model.dart';
 import '../../../../data/models/product_model.dart';
-import '../../../../data/repositories/message_service.dart';
-import '../../controllers/home_controller.dart';
+import '../../../auth/controllers/auth_controller.dart';
+import '../../controllers/message_controller.dart';
+import '../widgets/chat_bubble.dart';
 
-class DetailChatView extends GetView<HomeController> {
-  const DetailChatView({super.key});
+class ChatDetailView extends GetView<ChatController> {
+  const ChatDetailView({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
-    handleAddMessage() async {
-      await MessageService().addMessage(
-        user: authProvider.user,
-        isFromUser: true,
-        product: widget.product,
-        message: messageController.text,
-      );
-
-      setState(() {
-        widget.product = UninitializedProductModel();
-        messageController.text = '';
-      });
-    }
-
     PreferredSizeWidget header() {
       return AppBar(
         backgroundColor: backgroundColor1,
@@ -35,9 +23,7 @@ class DetailChatView extends GetView<HomeController> {
               'assets/image_shop_logo_online.png',
               width: 50,
             ),
-            SizedBox(
-              width: 12,
-            ),
+            SizedBox(width: 12),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -64,121 +50,105 @@ class DetailChatView extends GetView<HomeController> {
     }
 
     Widget productPreview() {
-      return Container(
-        width: 225,
-        height: 74,
-        margin: EdgeInsets.only(
-          bottom: 20,
-        ),
-        padding: EdgeInsets.all(
-          10,
-        ),
-        decoration: BoxDecoration(
-          color: backgroundColor5,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: primaryColor,
+      return Obx(() {
+        final product = controller.product.value;
+        if (product is UninitializedProductModel) {
+          return SizedBox();
+        }
+
+        return Container(
+          width: 225,
+          height: 74,
+          margin: EdgeInsets.only(bottom: 20),
+          padding: EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            color: backgroundColor5,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: primaryColor),
           ),
-        ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (widget.product.galleries!.isNotEmpty)
-              ClipRRect(
-                borderRadius: BorderRadius.circular(12),
-                child: Image.network(
-                  widget.product.galleries![0].url!,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (product.galleries!.isNotEmpty)
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: Image.network(
+                    product.galleries![0].url!,
+                    width: 60,
+                    height: 60,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Image.asset(
+                        'assets/image_shoes.png',
+                        width: 60,
+                        height: 60,
+                        fit: BoxFit.cover,
+                      );
+                    },
+                  ),
+                )
+              else
+                Image.asset(
+                  'assets/image_shoes.png',
                   width: 60,
                   height: 60,
                   fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) {
-                    print('Error loading image: $error');
-                    return Image.asset(
-                      'assets/image_shoes.png',
-                      width: 60,
-                      height: 60,
-                      fit: BoxFit.cover,
-                    );
-                  },
-                  loadingBuilder: (context, child, loadingProgress) {
-                    if (loadingProgress == null) return child;
-                    return Center(child: CircularProgressIndicator());
-                  },
                 ),
-              )
-            else
-              Image.asset(
-                'assets/image_shoes.png',
-                width: 60,
-                height: 60,
-                fit: BoxFit.cover,
-              ),
-            SizedBox(
-              width: 10,
-            ),
-            Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    widget.product.name!,
-                    style: primaryTextStyle,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  SizedBox(
-                    height: 2,
-                  ),
-                  Text(
-                    '\$${widget.product.price}',
-                    style: priceTextStyle.copyWith(
-                      fontWeight: medium,
+              SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      product.name!,
+                      style: primaryTextStyle,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                  ),
-                ],
+                    SizedBox(height: 2),
+                    Text(
+                      '\$${product.price}',
+                      style: priceTextStyle.copyWith(
+                        fontWeight: medium,
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-            GestureDetector(
-              onTap: () {
-                setState(() {
-                  widget.product = UninitializedProductModel();
-                });
-              },
-              child: Image.asset(
-                'assets/button_close.png',
-                width: 22,
+              GestureDetector(
+                onTap: controller.clearProduct,
+                child: Image.asset(
+                  'assets/button_close.png',
+                  width: 22,
+                ),
               ),
-            ),
-          ],
-        ),
-      );
+            ],
+          ),
+        );
+      });
     }
 
     Widget chatInput() {
       return Container(
         margin: EdgeInsets.all(20),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            widget.product is UninitializedProductModel
-                ? SizedBox()
-                : productPreview(),
+            productPreview(),
             Row(
               children: [
                 Expanded(
                   child: Container(
                     height: 45,
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 16,
-                    ),
+                    padding: EdgeInsets.symmetric(horizontal: 16),
                     decoration: BoxDecoration(
                       color: backgroundColor4,
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Center(
                       child: TextFormField(
-                        controller: messageController,
+                        controller: controller.messageController,
                         style: primaryTextStyle,
                         decoration: InputDecoration.collapsed(
                           hintText: 'Type Message...',
@@ -188,11 +158,16 @@ class DetailChatView extends GetView<HomeController> {
                     ),
                   ),
                 ),
-                SizedBox(
-                  width: 20,
-                ),
+                SizedBox(width: 20),
                 GestureDetector(
-                  onTap: handleAddMessage,
+                  onTap: () {
+                    final user = Get.find<AuthController>().user;
+                    controller.sendMessage(
+                      user: user!,
+                      message: controller.messageController.text,
+                      product: controller.product.value,
+                    );
+                  },
                   child: Image.asset(
                     'assets/button_send.png',
                     width: 45,
@@ -206,13 +181,11 @@ class DetailChatView extends GetView<HomeController> {
     }
 
     Widget content() {
+      final user = Get.find<AuthController>().user;
       return StreamBuilder<List<MessageModel>>(
-        stream: MessageService().getMessageByUserId(
-          userId: authProvider.user.id,
-        ),
+        stream: controller.getMessages(user!.id!),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
-            print('Stream error: ${snapshot.error}');
             return Center(
               child: Text('Error: ${snapshot.error}'),
             );
@@ -234,7 +207,6 @@ class DetailChatView extends GetView<HomeController> {
             padding: EdgeInsets.symmetric(
               horizontal: defaultMargin,
             ),
-            // reverse: true, // Tambahkan ini agar chat terbaru ada di bawah
             itemCount: snapshot.data!.length,
             itemBuilder: (context, index) {
               MessageModel message = snapshot.data![index];
@@ -255,4 +227,5 @@ class DetailChatView extends GetView<HomeController> {
       bottomNavigationBar: chatInput(),
       body: content(),
     );
-  }}
+  }
+}

@@ -15,7 +15,6 @@ class MessageService {
           .snapshots()
           .map((QuerySnapshot list) {
         var result = list.docs.map<MessageModel>((DocumentSnapshot message) {
-          print(message.data());
           return MessageModel.fromJson(message.data() as Map<String, dynamic>);
         }).toList();
 
@@ -26,17 +25,18 @@ class MessageService {
         return result;
       });
     } catch (e) {
-      throw Exception();
+      throw Exception('Failed to get messages');
     }
   }
 
-  Future<void> addMessage(
-      {UserModel? user,
-      bool? isFromUser,
-      String? message,
-      ProductModel? product}) async {
+  Future<void> addMessage({
+    UserModel? user,
+    bool? isFromUser,
+    String? message,
+    ProductModel? product,
+  }) async {
     try {
-      firestore.collection('messages').add({
+      await firestore.collection('messages').add({
         'message': message,
         'userId': user!.id,
         'userName': user.name,
@@ -46,11 +46,9 @@ class MessageService {
             product is UninitializedProductModel ? {} : product!.toJson(),
         'createdAt': DateTime.now().toString(),
         'updatedAt': DateTime.now().toString(),
-      }).then(
-        (value) => print('Pesan Berhasil Dikirim'),
-      );
+      });
     } catch (e) {
-      throw Exception('Pesan Gagal Dikirim!');
+      throw Exception('Failed to send message');
     }
   }
 }

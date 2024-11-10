@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 import '../../core/utils/image_url_helper.dart';
 import '../models/product_model.dart';
 
-class ProductService {
+class ProductRepository {
   Future<List<ProductModel>> getProducts() async {
     var url = Uri.parse('${AppConfig.apiUrl}/products');
     var headers = {'Content-Type': 'application/json'};

@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
-
 import 'package:get/get.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import '../../../core/theme/theme.dart';
+import '../../../data/models/product_model.dart';
+import '../../cart/controllers/cart_controller.dart';
+import '../../home/controllers/wishlist_controller.dart';
 import '../controllers/product_controller.dart';
 
+// ignore: must_be_immutable
 class ProductView extends GetView<ProductController> {
+  final ProductModel product = Get.arguments;
+
   List images = [
     'assets/image_shoes.png',
     'assets/image_shoes.png',
@@ -24,81 +29,70 @@ class ProductView extends GetView<ProductController> {
   ];
 
   int currentIndex = 0;
+
   @override
   Widget build(BuildContext context) {
+    final WishlistController wishlistController = Get.find();
+    final CartController cartController = Get.find<CartController>();
     Future<void> showSuccesDialog() async {
-      return showDialog(
-        context: context,
-        builder: (BuildContext context) => Container(
-          width: MediaQuery.of(context).size.width - (2 * defaultMargin),
-          child: AlertDialog(
-            backgroundColor: backgroundColor3,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(30),
-            ),
-            content: SingleChildScrollView(
-              child: Column(
-                children: [
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: GestureDetector(
-                      onTap: () {
-                        Navigator.pop(context);
-                      },
-                      child: Icon(
-                        Icons.close,
-                        color: primaryTextColor,
-                      ),
+      return Get.dialog(
+        AlertDialog(
+          backgroundColor: backgroundColor3,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(30),
+          ),
+          content: SingleChildScrollView(
+            child: Column(
+              children: [
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: GestureDetector(
+                    onTap: () {
+                      Get.back();
+                    },
+                    child: Icon(
+                      Icons.close,
+                      color: primaryTextColor,
                     ),
                   ),
-                  Image.asset(
-                    'assets/icon_success.png',
-                    width: 100,
-                  ),
-                  SizedBox(
-                    height: 12,
-                  ),
-                  Text(
-                    'Hurray :)',
-                    style: primaryTextStyle.copyWith(
-                      fontSize: 18,
-                      fontWeight: semiBold,
-                    ),
-                  ),
-                  SizedBox(
-                    height: 12,
-                  ),
-                  Text(
-                    'Item added successfully',
-                    style: secondaryTextStyle,
-                  ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  Container(
-                    width: 154,
-                    height: 44,
-                    child: TextButton(
-                      onPressed: () {
-                        Navigator.pushNamed(context, '/cart');
-                      },
-                      style: TextButton.styleFrom(
-                        backgroundColor: primaryColor,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      child: Text(
-                        'View My Cart',
-                        style: primaryTextStyle.copyWith(
-                          fontSize: 16,
-                          fontWeight: medium,
-                        ),
+                ),
+                Image.asset(
+                  'assets/icon_success.png',
+                  width: 100,
+                ),
+                SizedBox(height: 12),
+                Text(
+                  'Hurray :)',
+                  style: primaryTextStyle.copyWith(
+                      fontSize: 18, fontWeight: semiBold),
+                ),
+                SizedBox(height: 12),
+                Text(
+                  'Item added successfully',
+                  style: secondaryTextStyle,
+                ),
+                SizedBox(height: 20),
+                Container(
+                  width: 154,
+                  height: 44,
+                  child: TextButton(
+                    onPressed: () {
+                      Get.toNamed('/cart');
+                    },
+                    style: TextButton.styleFrom(
+                      backgroundColor: primaryColor,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
                       ),
                     ),
+                    child: Text(
+                      'View My Cart',
+                      style: primaryTextStyle.copyWith(
+                          fontSize: 16, fontWeight: medium),
+                    ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),
@@ -109,9 +103,7 @@ class ProductView extends GetView<ProductController> {
       return Container(
         width: currentIndex == index ? 16 : 4,
         height: 4,
-        margin: EdgeInsets.symmetric(
-          horizontal: 2,
-        ),
+        margin: EdgeInsets.symmetric(horizontal: 2),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
           color: currentIndex == index ? primaryColor : Color(0xffC4C4C4),
@@ -123,9 +115,7 @@ class ProductView extends GetView<ProductController> {
       return Container(
         width: 54,
         height: 54,
-        margin: EdgeInsets.only(
-          right: 16,
-        ),
+        margin: EdgeInsets.only(right: 16),
         decoration: BoxDecoration(
           image: DecorationImage(
             image: AssetImage(imageUrl),
@@ -153,9 +143,7 @@ class ProductView extends GetView<ProductController> {
                   onTap: () {
                     Navigator.pop(context);
                   },
-                  child: Icon(
-                    Icons.chevron_left,
-                  ),
+                  child: Icon(Icons.chevron_left),
                 ),
                 Icon(
                   Icons.shopping_bag,
@@ -165,7 +153,7 @@ class ProductView extends GetView<ProductController> {
             ),
           ),
           CarouselSlider(
-            items: widget.product.galleries!
+            items: controller.product.galleries!
                 .map(
                   (image) => Image.network(
                     image.url!,
@@ -178,18 +166,14 @@ class ProductView extends GetView<ProductController> {
             options: CarouselOptions(
               initialPage: 0,
               onPageChanged: (index, reason) {
-                setState(() {
-                  currentIndex = index;
-                });
+                currentIndex = index;
               },
             ),
           ),
-          SizedBox(
-            height: 20,
-          ),
+          SizedBox(height: 20),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: widget.product.galleries!.map((e) {
+            children: controller.product.galleries!.map((e) {
               index++;
               return indicator(index);
             }).toList(),
@@ -202,9 +186,7 @@ class ProductView extends GetView<ProductController> {
       int index = -1;
       return Container(
         width: double.infinity,
-        margin: EdgeInsets.only(
-          top: 17,
-        ),
+        margin: EdgeInsets.only(top: 17),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.vertical(
             top: Radius.circular(24),
@@ -213,12 +195,11 @@ class ProductView extends GetView<ProductController> {
         ),
         child: Column(
           children: [
-            // NOTE : HEADER
+            // Header
             Container(
-              margin: EdgeInsets.only(
-                top: defaultMargin,
-                right: defaultMargin,
-                left: defaultMargin,
+              margin: EdgeInsets.symmetric(
+                horizontal: defaultMargin,
+                vertical: defaultMargin,
               ),
               child: Row(
                 children: [
@@ -227,59 +208,53 @@ class ProductView extends GetView<ProductController> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          widget.product.name!,
+                          controller.product.name!,
                           style: primaryTextStyle.copyWith(
                             fontSize: 18,
                             fontWeight: semiBold,
                           ),
                         ),
                         Text(
-                          widget.product.category!.name!,
+                          controller.product.category!.name!,
                           style: secondaryTextStyle.copyWith(
                             fontSize: 12,
                           ),
-                        )
+                        ),
                       ],
                     ),
                   ),
                   GestureDetector(
                     onTap: () {
-                      wishlistProvider.setProduct(widget.product);
-
-                      if (wishlistProvider.isWishlist(widget.product)) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            backgroundColor: secondaryColor,
-                            content: Text(
-                              'Has been added to the Wishlist',
-                              textAlign: TextAlign.center,
-                            ),
+                      wishlistController.toggleWishlist(controller.product);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          backgroundColor: wishlistController
+                                  .isInWishlist(controller.product)
+                              ? secondaryColor
+                              : alertColor,
+                          content: Text(
+                            wishlistController.isInWishlist(controller.product)
+                                ? 'Has been added to the Wishlist'
+                                : 'Has been removed from the Wishlist',
+                            textAlign: TextAlign.center,
                           ),
-                        );
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            backgroundColor: alertColor,
-                            content: Text(
-                              'Has been removed from the Wishlist',
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                        );
-                      }
+                        ),
+                      );
                     },
-                    child: Image.asset(
-                      wishlistProvider.isWishlist(widget.product)
-                          ? 'assets/button_wishlist_blue.png'
-                          : 'assets/button_wishlist.png',
-                      width: 46,
-                    ),
-                  )
+                    child: Obx(() {
+                      return Image.asset(
+                        wishlistController.isInWishlist(controller.product)
+                            ? 'assets/button_wishlist_blue.png'
+                            : 'assets/button_wishlist.png',
+                        width: 46,
+                      );
+                    }),
+                  ),
                 ],
               ),
             ),
 
-            // NOTE : PRICE
+            // Price
             Container(
               width: double.infinity,
               margin: EdgeInsets.only(
@@ -302,7 +277,7 @@ class ProductView extends GetView<ProductController> {
                     style: primaryTextStyle,
                   ),
                   Text(
-                    '\$${widget.product.price}',
+                    '\$${controller.product.price}',
                     style: priceTextStyle.copyWith(
                       fontSize: 16,
                       fontWeight: semiBold,
@@ -331,7 +306,7 @@ class ProductView extends GetView<ProductController> {
                     height: 12,
                   ),
                   Text(
-                    widget.product.description!,
+                    controller.product.description!,
                     style: subtitleTextStyle.copyWith(
                       fontWeight: light,
                     ),
@@ -380,8 +355,6 @@ class ProductView extends GetView<ProductController> {
                 ],
               ),
             ),
-
-            //NOTE : BUTTONS
             Container(
               width: double.infinity,
               margin: EdgeInsets.all(defaultMargin),
@@ -389,12 +362,7 @@ class ProductView extends GetView<ProductController> {
                 children: [
                   GestureDetector(
                     onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => DetailChatPage(widget.product),
-                        ),
-                      );
+                      Get.toNamed('/chat', arguments: controller.product);
                     },
                     child: Container(
                       width: 54,
@@ -406,31 +374,25 @@ class ProductView extends GetView<ProductController> {
                       ),
                     ),
                   ),
-                  SizedBox(
-                    width: 16,
-                  ),
+                  SizedBox(width: 16),
                   Expanded(
                     child: Container(
                       height: 54,
                       child: TextButton(
                         onPressed: () {
-                          cartProvider.addCart(widget.product);
+                          cartController.addCart(controller.product);
                           showSuccesDialog();
                         },
                         style: TextButton.styleFrom(
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(
-                              12,
-                            ),
+                            borderRadius: BorderRadius.circular(12),
                           ),
                           backgroundColor: primaryColor,
                         ),
                         child: Text(
                           'Add to Cart',
                           style: primaryTextStyle.copyWith(
-                            fontSize: 16,
-                            fontWeight: semiBold,
-                          ),
+                              fontSize: 16, fontWeight: semiBold),
                         ),
                       ),
                     ),

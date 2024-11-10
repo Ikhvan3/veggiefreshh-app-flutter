@@ -7,6 +7,7 @@ import 'app/routes/app_pages.dart';
 import 'firebase_options.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions
         .currentPlatform, // Gunakan options dari firebase_options.dart
@@ -14,7 +15,8 @@ void main() async {
   runApp(
     GetMaterialApp(
       title: "Application",
-      initialRoute: AppPages.INITIAL,
+      debugShowCheckedModeBanner: false,
+      initialRoute: Routes.AUTHIN,
       getPages: AppPages.routes,
     ),
   );

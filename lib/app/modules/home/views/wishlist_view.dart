@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../../../core/theme/theme.dart';
-import '../controllers/main_controller.dart';
+import 'package:veggiefresh/app/modules/home/views/widgets/wishlist_card.dart';
 
-class WishlistView extends GetView<MainController> {
+import '../../../core/theme/theme.dart';
+import '../controllers/wishlist_controller.dart';
+
+class WishlistView extends GetView<WishlistController> {
   const WishlistView({Key? key}) : super(key: key);
 
   @override
@@ -58,7 +60,7 @@ class WishlistView extends GetView<MainController> {
                 height: 44,
                 child: TextButton(
                   onPressed: () {
-                    pageProvider.currentIndex = 0;
+                    Get.toNamed('/home');
                   },
                   style: TextButton.styleFrom(
                     padding: EdgeInsets.symmetric(
@@ -89,18 +91,20 @@ class WishlistView extends GetView<MainController> {
       return Expanded(
         child: Container(
           color: backgroundColor3,
-          child: ListView(
-            padding: EdgeInsets.symmetric(
-              horizontal: defaultMargin,
-            ),
-            children: wishlistProvider.wishlist != null
-                ? wishlistProvider.wishlist
-                    .map(
-                      (product) => WishListCard(product),
-                    )
-                    .toList()
-                : [],
-          ),
+          child: Obx(() {
+            return ListView(
+              padding: EdgeInsets.symmetric(
+                horizontal: defaultMargin,
+              ),
+              children: controller.wishlist.isNotEmpty
+                  ? controller.wishlist
+                      .map(
+                        (product) => WishListCard(product),
+                      )
+                      .toList()
+                  : [],
+            );
+          }),
         ),
       );
     }
@@ -108,8 +112,10 @@ class WishlistView extends GetView<MainController> {
     return Column(
       children: [
         header(),
-        // emptyWishlist(),
-        wishlistProvider.wishlist.length == 0 ? emptyWishlist() : content(),
+        // Tampilkan emptyWishlist atau content berdasarkan kondisi wishlist
+        Obx(() {
+          return controller.wishlist.isEmpty ? emptyWishlist() : content();
+        }),
       ],
     );
   }

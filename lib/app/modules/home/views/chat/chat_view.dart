@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
 import '../../../../core/theme/theme.dart';
 import '../../../../data/models/message_model.dart';
-import '../../../../data/repositories/message_service.dart';
+import '../../../auth/controllers/auth_controller.dart';
 import '../../controllers/main_controller.dart';
+import '../../controllers/message_controller.dart';
+import '../widgets/chat_tile.dart';
 
-class ChatView extends GetView<MainController> {
+class ChatView extends GetView<ChatController> {
   const ChatView({Key? key}) : super(key: key);
 
   @override
@@ -39,9 +40,7 @@ class ChatView extends GetView<MainController> {
                 'assets/icon_headset.png',
                 width: 80,
               ),
-              SizedBox(
-                height: 20,
-              ),
+              SizedBox(height: 20),
               Text(
                 'Opss no message yet?',
                 style: primaryTextStyle.copyWith(
@@ -49,22 +48,16 @@ class ChatView extends GetView<MainController> {
                   fontWeight: medium,
                 ),
               ),
-              SizedBox(
-                height: 12,
-              ),
+              SizedBox(height: 12),
               Text(
                 'You have never done a transaction',
                 style: secondaryTextStyle,
               ),
+              SizedBox(height: 20),
               SizedBox(
-                height: 20,
-              ),
-              Container(
                 height: 44,
                 child: TextButton(
-                  onPressed: () {
-                    pageProvider.currentIndex = 0;
-                  },
+                  onPressed: () => Get.find<MainController>().changePage(0),
                   style: TextButton.styleFrom(
                     padding: EdgeInsets.symmetric(
                       horizontal: 24,
@@ -91,32 +84,32 @@ class ChatView extends GetView<MainController> {
     }
 
     Widget content() {
+      final user = Get.find<AuthController>().user;
       return StreamBuilder<List<MessageModel>>(
-          stream:
-              MessageService().getMessageByUserId(userId: authProvider.user.id),
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              if (snapshot.data!.length == 0) {
-                return EmptyChat();
-              }
-              return Expanded(
-                child: Container(
-                  width: double.infinity,
-                  color: backgroundColor3,
-                  child: ListView(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: defaultMargin,
-                    ),
-                    children: [
-                      ChatTile(snapshot.data![snapshot.data!.length - 1]),
-                    ],
-                  ),
-                ),
-              );
-            } else {
+        stream: controller.getMessages(user!.id!),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            if (snapshot.data!.isEmpty) {
               return EmptyChat();
             }
-          });
+            return Expanded(
+              child: Container(
+                width: double.infinity,
+                color: backgroundColor3,
+                child: ListView(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: defaultMargin,
+                  ),
+                  children: [
+                    ChatTile(snapshot.data![snapshot.data!.length - 1]),
+                  ],
+                ),
+              ),
+            );
+          }
+          return EmptyChat();
+        },
+      );
     }
 
     return Column(

@@ -1,24 +1,10 @@
 import 'package:flutter/material.dart';
-
 import 'package:get/get.dart';
-
 import '../../../core/theme/theme.dart';
-import '../../../data/providers/product_provider.dart';
 import '../controllers/splash_controller.dart';
 
 class SplashView extends GetView<SplashController> {
-  void initState() {
-    // TODO: implement initState
-    getInit();
-    super.initState();
-  }
-
-  getInit() async {
-    await Provider.of<ProductProvider>(context, listen: false).getProducts();
-    await Future.delayed(
-        Duration(seconds: 1)); // Tambahkan delay untuk memastikan data ter-load
-    Navigator.pushNamed(context, '/sign-in');
-  }
+  const SplashView({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

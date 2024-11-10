@@ -1,23 +1,32 @@
 import 'package:get/get.dart';
+import 'package:veggiefresh/app/routes/app_pages.dart';
+import '../../../data/repositories/product_repository.dart';
 
 class SplashController extends GetxController {
-  //TODO: Implement SplashController
+  final ProductRepository _productRepository = ProductRepository();
+  final RxBool isLoading = true.obs;
 
-  final count = 0.obs;
   @override
   void onInit() {
     super.onInit();
+    initializeApp();
   }
 
-  @override
-  void onReady() {
-    super.onReady();
-  }
+  Future<void> initializeApp() async {
+    try {
+      // Load initial data
+      await _productRepository.getProducts();
 
-  @override
-  void onClose() {
-    super.onClose();
-  }
+      // Add delay for splash screen
+      await Future.delayed(Duration(seconds: 1));
 
-  void increment() => count.value++;
+      // Navigate to sign in page
+      Get.offAllNamed(Routes.AUTHIN);
+    } catch (e) {
+      print('Error initializing app: $e');
+      // You might want to show an error message or handle errors differently
+    } finally {
+      isLoading.value = false;
+    }
+  }
 }

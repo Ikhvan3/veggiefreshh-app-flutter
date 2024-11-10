@@ -4,6 +4,8 @@ import 'package:get/get.dart';
 
 import '../../../core/theme/theme.dart';
 import '../controllers/home_controller.dart';
+import 'widgets/product_card.dart';
+import 'widgets/product_tile.dart';
 
 class HomeView extends GetView<HomeController> {
   const HomeView({super.key});
@@ -16,42 +18,45 @@ class HomeView extends GetView<HomeController> {
           left: defaultMargin,
           right: defaultMargin,
         ),
-        child: Row(
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Hallo, ${user.name}',
-                    style: primaryTextStyle.copyWith(
-                      fontSize: 24,
-                      fontWeight: semiBold,
+        child: Obx(() {
+          final user = controller.currentUser.value;
+          return Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Hallo, ${user.name ?? "User"}',
+                      style: primaryTextStyle.copyWith(
+                        fontSize: 24,
+                        fontWeight: semiBold,
+                      ),
                     ),
-                  ),
-                  Text(
-                    '@${user.username}',
-                    style: subtitleTextStyle.copyWith(
-                      fontSize: 16,
+                    Text(
+                      '@${user.username ?? "username"}',
+                      style: subtitleTextStyle.copyWith(
+                        fontSize: 16,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-            Container(
-              width: 54,
-              height: 54,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                image: DecorationImage(
-                  image: NetworkImage(
-                    user.profilePhotoUrl.toString(),
+              Container(
+                width: 54,
+                height: 54,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  image: DecorationImage(
+                    image: NetworkImage(
+                      user.profilePhotoUrl ?? 'https://placeholder.com/user',
+                    ),
                   ),
                 ),
               ),
-            ),
-          ],
-        ),
+            ],
+          );
+        }),
       );
     }
 
@@ -203,27 +208,27 @@ class HomeView extends GetView<HomeController> {
     }
 
     Widget popularProducts() {
-      if (productProvider.products.isEmpty) {
-        // Jika data masih kosong, tampilkan CircularProgressIndicator
-        return Center(child: CircularProgressIndicator());
-      }
-
-      return Container(
-        margin: EdgeInsets.only(top: 14),
-        child: SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Row(
-            children: [
-              SizedBox(width: defaultMargin),
-              Row(
-                children: productProvider.products
-                    .map((product) => ProductCard(product))
-                    .toList(),
-              ),
-            ],
+      return Obx(() {
+        if (controller.products.isEmpty) {
+          return Center(child: CircularProgressIndicator());
+        }
+        return Container(
+          margin: EdgeInsets.only(top: 14),
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: [
+                SizedBox(width: defaultMargin),
+                Row(
+                  children: controller.products
+                      .map((product) => ProductCard(product))
+                      .toList(),
+                ),
+              ],
+            ),
           ),
-        ),
-      );
+        );
+      });
     }
 
     Widget newArrivalTitle() {
@@ -249,7 +254,7 @@ class HomeView extends GetView<HomeController> {
           top: 14,
         ),
         child: Column(
-          children: productProvider.products
+          children: controller.products
               .map((product) => ProductTile(product))
               .toList(),
         ),

@@ -1,23 +1,25 @@
 import 'package:get/get.dart';
 
+import '../../../data/models/product_model.dart';
+
 class ProductController extends GetxController {
-  //TODO: Implement ProductController
+  final ProductModel product;
 
-  final count = 0.obs;
-  @override
-  void onInit() {
-    super.onInit();
+  ProductController(this.product);
+
+  var currentIndex = 0.obs;
+  var isWishlist = false.obs;
+
+  void setCurrentIndex(int index) {
+    currentIndex.value = index;
   }
 
-  @override
-  void onReady() {
-    super.onReady();
+  void toggleWishlist() {
+    isWishlist.value = !isWishlist.value;
   }
 
-  @override
-  void onClose() {
-    super.onClose();
+  void addToCart() {
+    // Add cart logic here
+    Get.snackbar("Success", "Item added to cart");
   }
-
-  void increment() => count.value++;
 }
