@@ -1,9 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-
 import 'package:shared_preferences/shared_preferences.dart';
-
 import '../models/user_model.dart';
 
 class AuthService {
@@ -30,35 +28,34 @@ class AuthService {
   }) async {
     var url = Uri.parse('$baseUrl/register');
     var headers = {'Content-Type': 'application/json'};
-    var body = jsonEncode(
-      {
-        'name': name,
-        'username': username,
-        'email': email,
-        'password': password,
-      },
-    );
+    var body = jsonEncode({
+      'name': name,
+      'username': username,
+      'email': email,
+      'password': password,
+    });
 
-    var response = await http.post(
-      url,
-      headers: headers,
-      body: body,
-    );
+    try {
+      var response = await http.post(
+        url,
+        headers: headers,
+        body: body,
+      );
 
-    print('Response status: ${response.statusCode}');
-    print('Response body: ${response.body}');
+      debugPrint('Response status: ${response.statusCode}');
+      debugPrint('Response body: ${response.body}');
 
-    if (response.statusCode == 200) {
-      var data = jsonDecode(response.body)['data'];
-      UserModel user = UserModel.fromJson(data['user']);
-      String token = 'Bearer ' + data['access_token'];
-
-      // Simpan token setelah register
-      await _saveToken(token);
-
-      return user;
-    } else {
-      throw Exception('Gagal Register: ${response.body}');
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.body)['data'];
+        UserModel user = UserModel.fromJson(data['user']);
+        String token = 'Bearer ' + data['access_token'];
+        await _saveToken(token);
+        return user;
+      } else {
+        throw Exception('Gagal Register: ${response.body}');
+      }
+    } catch (e) {
+      throw Exception('Error during registration: $e');
     }
   }
 
@@ -75,9 +72,6 @@ class AuthService {
     });
 
     try {
-      debugPrint('Attempting to login with URL: $url');
-      debugPrint('Request body: $body');
-
       var response = await http.post(
         url,
         headers: headers,
@@ -91,17 +85,13 @@ class AuthService {
         var data = jsonDecode(response.body)['data'];
         UserModel user = UserModel.fromJson(data['user']);
         String token = 'Bearer ' + data['access_token'];
-
-        debugPrint('Login successful. Saving token.');
         await _saveToken(token);
-
         return user;
       } else {
         throw Exception('Gagal Login: ${response.body}');
       }
-    } catch (error) {
-      debugPrint('Error during login: $error');
-      throw Exception('Error during login: $error');
+    } catch (e) {
+      throw Exception('Error during login: $e');
     }
   }
 }
