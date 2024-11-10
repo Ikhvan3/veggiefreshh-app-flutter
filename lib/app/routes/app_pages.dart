@@ -33,12 +33,12 @@ class AppPages {
       binding: CartBinding(),
     ),
     GetPage(
-      name: _Paths.AUTH,
+      name: _Paths.AUTHIN,
       page: () => SignInView(),
       binding: AuthBinding(),
     ),
     GetPage(
-      name: _Paths.AUTH,
+      name: _Paths.AUTHUP,
       page: () => SignUpView(),
       binding: AuthBinding(),
     ),

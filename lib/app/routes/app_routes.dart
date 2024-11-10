@@ -8,7 +8,8 @@ abstract class Routes {
   static const CHECKOUT = _Paths.CHECKOUT;
   static const PROFILE = _Paths.PROFILE;
   static const CHAT = _Paths.CHAT;
-  static const AUTH = _Paths.AUTH;
+  static const AUTHIN = _Paths.AUTHIN;
+  static const AUTHUP = _Paths.AUTHUP;
   static const SPLASH = _Paths.SPLASH;
   static const PRODUCT = _Paths.PRODUCT;
 }
@@ -20,7 +21,8 @@ abstract class _Paths {
   static const CHECKOUT = '/checkout';
   static const PROFILE = '/profile';
   static const CHAT = '/chat';
-  static const AUTH = '/auth';
+  static const AUTHIN = '/sign-in';
+  static const AUTHUP = '/sign-up';
   static const SPLASH = '/splash';
   static const PRODUCT = '/product';
 }

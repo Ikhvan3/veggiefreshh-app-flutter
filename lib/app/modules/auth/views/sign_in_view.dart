@@ -7,51 +7,9 @@ import '../../../global_widgets/loading_button.dart';
 import '../controllers/auth_controller.dart';
 
 class SignInView extends GetView<AuthController> {
-  const AuthView({super.key});
+  const SignInView({super.key});
   @override
   Widget build(BuildContext context) {
-    Future<void> handleSignIn() async {
-      setState(() {
-        isLoading = true;
-      });
-
-      try {
-        bool loginBerhasil = await authProvider.login(
-          email: emailController.text,
-          password: passwordController.text,
-        );
-
-        if (loginBerhasil) {
-          Navigator.pushNamed(context, '/home');
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              backgroundColor: alertColor,
-              content: Text(
-                'Gagal Login! Periksa email dan password Anda.',
-                textAlign: TextAlign.center,
-              ),
-            ),
-          );
-        }
-      } catch (e) {
-        print('Detailed error: $e');
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            backgroundColor: alertColor,
-            content: Text(
-              'Error saat login: ${e.toString()}',
-              textAlign: TextAlign.center,
-            ),
-          ),
-        );
-      }
-
-      setState(() {
-        isLoading = false;
-      });
-    }
-
     Widget header() {
       return Container(
         margin: EdgeInsets.only(top: 30),
@@ -119,7 +77,7 @@ class SignInView extends GetView<AuthController> {
                     Expanded(
                         child: TextFormField(
                       style: primaryTextStyle,
-                      controller: emailController,
+                      controller: controller.emailController,
                       decoration: InputDecoration.collapsed(
                         hintText: 'Your Email Address',
                         hintStyle: subtitleTextStyle,
@@ -177,7 +135,7 @@ class SignInView extends GetView<AuthController> {
                         child: TextFormField(
                       obscureText: true,
                       style: primaryTextStyle,
-                      controller: passwordController,
+                      controller: controller.passwordController,
                       decoration: InputDecoration.collapsed(
                         hintText: 'Your Password',
                         hintStyle: subtitleTextStyle,
@@ -196,17 +154,25 @@ class SignInView extends GetView<AuthController> {
       return Container(
         height: 50,
         width: double.infinity,
-        margin: EdgeInsets.only(
-          top: 30,
-        ),
+        margin: EdgeInsets.only(top: 30),
         child: TextButton(
-          onPressed: handleSignIn,
+          onPressed: () async {
+            if (await controller.login()) {
+              Get.offNamed('/home');
+            } else {
+              Get.snackbar(
+                'Error',
+                'Gagal Login! Periksa email dan password Anda.',
+                backgroundColor: alertColor,
+                colorText: Colors.white,
+                snackPosition: SnackPosition.BOTTOM,
+              );
+            }
+          },
           style: TextButton.styleFrom(
             backgroundColor: primaryColor,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(
-                12,
-              ),
+              borderRadius: BorderRadius.circular(12),
             ),
           ),
           child: Text(
@@ -234,7 +200,7 @@ class SignInView extends GetView<AuthController> {
             ),
             GestureDetector(
               onTap: () {
-                Navigator.pushNamed(context, '/sign-up');
+                Get.offNamed('/sign-up');
               },
               child: Text(
                 'Sign Up',
@@ -263,7 +229,9 @@ class SignInView extends GetView<AuthController> {
               header(),
               emailInput(),
               passwordInput(),
-              isLoading ? LoadingButton() : signInButton(),
+              Obx(() => controller.isLoading.value
+                  ? LoadingButton()
+                  : signInButton()),
               Spacer(),
               footer(),
             ],

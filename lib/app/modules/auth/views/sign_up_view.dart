@@ -7,38 +7,9 @@ import '../../../global_widgets/loading_button.dart';
 import '../controllers/auth_controller.dart';
 
 class SignUpView extends GetView<AuthController> {
-  const AuthView({super.key});
+  const SignUpView({super.key});
   @override
   Widget build(BuildContext context) {
-    Future<void> handleSignUp() async {
-      setState(() {
-        isLoading = true;
-      });
-
-      if (await authProvider.register(
-        name: nameController.text,
-        username: usernameController.text,
-        email: emailController.text,
-        password: passwordController.text,
-      )) {
-        Navigator.pushNamed(context, '/home');
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            backgroundColor: alertColor,
-            content: Text(
-              'Gagal Register!',
-              textAlign: TextAlign.center,
-            ),
-          ),
-        );
-      }
-
-      setState(() {
-        isLoading = false;
-      });
-    }
-
     Widget header() {
       return Container(
         margin: EdgeInsets.only(top: 30),
@@ -106,7 +77,7 @@ class SignUpView extends GetView<AuthController> {
                     Expanded(
                         child: TextFormField(
                       style: primaryTextStyle,
-                      controller: nameController,
+                      controller: controller.nameController,
                       decoration: InputDecoration.collapsed(
                         hintText: 'Your Full Name',
                         hintStyle: subtitleTextStyle,
@@ -163,7 +134,7 @@ class SignUpView extends GetView<AuthController> {
                     Expanded(
                       child: TextFormField(
                         style: primaryTextStyle,
-                        controller: usernameController,
+                        controller: controller.usernameController,
                         decoration: InputDecoration.collapsed(
                           hintText: 'Your Username',
                           hintStyle: subtitleTextStyle,
@@ -221,7 +192,7 @@ class SignUpView extends GetView<AuthController> {
                     Expanded(
                         child: TextFormField(
                       style: primaryTextStyle,
-                      controller: emailController,
+                      controller: controller.emailController,
                       decoration: InputDecoration.collapsed(
                         hintText: 'Your Email Address',
                         hintStyle: subtitleTextStyle,
@@ -279,7 +250,7 @@ class SignUpView extends GetView<AuthController> {
                         child: TextFormField(
                       obscureText: true,
                       style: primaryTextStyle,
-                      controller: passwordController,
+                      controller: controller.passwordController,
                       decoration: InputDecoration.collapsed(
                         hintText: 'Your Password',
                         hintStyle: subtitleTextStyle,
@@ -302,7 +273,19 @@ class SignUpView extends GetView<AuthController> {
           top: 30,
         ),
         child: TextButton(
-          onPressed: handleSignUp,
+          onPressed: () async {
+            if (await controller.login()) {
+              Get.offNamed('/home');
+            } else {
+              Get.snackbar(
+                'Error',
+                'Gagal Register! Periksa email dan password Anda.',
+                backgroundColor: alertColor,
+                colorText: Colors.white,
+                snackPosition: SnackPosition.BOTTOM,
+              );
+            }
+          },
           style: TextButton.styleFrom(
             backgroundColor: primaryColor,
             shape: RoundedRectangleBorder(
@@ -336,7 +319,7 @@ class SignUpView extends GetView<AuthController> {
             ),
             GestureDetector(
               onTap: () {
-                Navigator.pop(context);
+                Get.offNamed('/sign-in');
               },
               child: Text(
                 'Sign In',
@@ -363,11 +346,11 @@ class SignUpView extends GetView<AuthController> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               header(),
-              nameInput(),
-              usernameInput(),
               emailInput(),
               passwordInput(),
-              isLoading ? LoadingButton() : signUpButton(),
+              Obx(() => controller.isLoading.value
+                  ? LoadingButton()
+                  : signUpButton()),
               Spacer(),
               footer(),
             ],
