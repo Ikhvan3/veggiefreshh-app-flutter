@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../core/theme/theme.dart';
 import '../../../../data/models/message_model.dart';
+import '../../controllers/main_controller.dart';
 import '../../controllers/message_controller.dart';
 import '../widgets/chat_tile.dart';
 
@@ -55,7 +56,7 @@ class ChatPage extends GetView<ChatController> {
               SizedBox(
                 height: 44,
                 child: TextButton(
-                  onPressed: () => controller.currentIndex.value = 0,
+                  onPressed: () => Get.find<MainController>().changePage(0),
                   style: TextButton.styleFrom(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 24,

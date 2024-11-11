@@ -49,7 +49,7 @@ class DetailChatView extends GetView<ChatDetailController> {
 
     Widget productPreview() {
       return Obx(() {
-        final currentProduct = controller.product.value;
+        final currentProduct = controller.product?.value;
         if (currentProduct == null ||
             currentProduct is UninitializedProductModel) {
           return const SizedBox();
@@ -158,13 +158,23 @@ class DetailChatView extends GetView<ChatDetailController> {
                 GetBuilder<ChatDetailController>(
                   builder: (controller) => GestureDetector(
                     onTap: () {
-                      if (controller.messageController.text.isNotEmpty) {
-                        final user = Get.find<AuthController>().user?.value;
+                      final messageText =
+                          controller.messageController.text.trim();
+                      if (messageText.isNotEmpty) {
+                        final authController = Get.find<AuthController>();
+                        final user = authController.user?.value;
                         if (user != null) {
                           controller.sendMessage(
                             user: user,
-                            message: controller.messageController.text,
+                            message: messageText,
                             product: controller.product.value,
+                          );
+                          controller.messageController.clear();
+                        } else {
+                          Get.snackbar(
+                            'Error',
+                            'Please login to send messages',
+                            snackPosition: SnackPosition.BOTTOM,
                           );
                         }
                       }
@@ -183,44 +193,44 @@ class DetailChatView extends GetView<ChatDetailController> {
     }
 
     Widget content() {
-      return GetBuilder<AuthController>(
-        builder: (authController) {
-          final user = authController.user?.value;
-          if (user == null) {
-            return const Center(child: Text('Please login to continue'));
-          }
-
-          return StreamBuilder<List<MessageModel>>(
-            stream: controller.getMessages(user.id),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
-              }
-
-              if (snapshot.hasError) {
-                return Center(child: Text('Error: ${snapshot.error}'));
-              }
-
-              if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                return const Center(child: Text('No messages yet'));
-              }
-
-              return ListView.builder(
-                padding: EdgeInsets.symmetric(horizontal: defaultMargin),
-                itemCount: snapshot.data!.length,
-                itemBuilder: (context, index) {
-                  final message = snapshot.data![index];
-                  return ChatBubble(
-                    isSender: message.isFromUser!,
-                    text: message.message!,
-                    product: message.product,
-                  );
-                },
-              );
-            },
+      return Obx(() {
+        final user = Get.find<AuthController>().user?.value;
+        if (user == null) {
+          return const Center(
+            child: Text('Please login to view messages'),
           );
-        },
-      );
+        }
+
+        return StreamBuilder<List<MessageModel>>(
+          stream: controller.getMessages(user.id),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            }
+
+            if (snapshot.hasError) {
+              return Center(child: Text('Error: ${snapshot.error}'));
+            }
+
+            if (!snapshot.hasData || snapshot.data!.isEmpty) {
+              return const Center(child: Text('No messages yet'));
+            }
+
+            return ListView.builder(
+              padding: EdgeInsets.symmetric(horizontal: defaultMargin),
+              itemCount: snapshot.data!.length,
+              itemBuilder: (context, index) {
+                final message = snapshot.data![index];
+                return ChatBubble(
+                  isSender: message.isFromUser!,
+                  text: message.message!,
+                  product: message.product,
+                );
+              },
+            );
+          },
+        );
+      });
     }
 
     return Scaffold(

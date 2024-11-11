@@ -7,7 +7,11 @@ import '../../../data/repositories/message_service.dart';
 
 class ChatDetailController extends GetxController {
   final MessageRepository messageRepository;
-  ChatDetailController({required this.messageRepository});
+  ChatDetailController({required this.messageRepository}) {
+    if (Get.arguments != null && Get.arguments is ProductModel) {
+      product.value = Get.arguments as ProductModel;
+    }
+  }
 
   final TextEditingController messageController = TextEditingController();
   final Rx<ProductModel?> product = Rx<ProductModel?>(null);

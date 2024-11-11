@@ -45,8 +45,7 @@ class ChatBubble extends StatelessWidget {
                   ClipRRect(
                     borderRadius: BorderRadius.circular(12),
                     child: Image.network(
-                      product!.galleries![0].url ??
-                          '', // Pastikan url tidak null
+                      product!.galleries![0].url ?? '',
                       width: 60,
                       height: 60,
                       fit: BoxFit.cover,
@@ -77,12 +76,12 @@ class ChatBubble extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        product?.name ?? 'Unknown', // Pastikan nama tidak null
+                        product?.name ?? 'Unknown',
                         style: primaryTextStyle,
                       ),
                       SizedBox(height: 4),
                       Text(
-                        '\$${product?.price ?? '0'}', // Pastikan harga tidak null
+                        '\$${product?.price ?? '0'}',
                         style: priceTextStyle.copyWith(
                           fontWeight: medium,
                         ),
