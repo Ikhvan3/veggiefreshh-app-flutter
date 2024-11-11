@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:veggiefresh/app/modules/home/views/widgets/wishlist_card.dart';
 
 import '../../../core/theme/theme.dart';
+import '../controllers/main_controller.dart';
 import '../controllers/wishlist_controller.dart';
 
 class WishlistView extends GetView<WishlistController> {
@@ -59,9 +60,7 @@ class WishlistView extends GetView<WishlistController> {
               Container(
                 height: 44,
                 child: TextButton(
-                  onPressed: () {
-                    Get.toNamed('/home');
-                  },
+                  onPressed: () => Get.find<MainController>().changePage(0),
                   style: TextButton.styleFrom(
                     padding: EdgeInsets.symmetric(
                       vertical: 10,

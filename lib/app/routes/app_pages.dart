@@ -10,6 +10,7 @@ import '../modules/cart/bindings/cart_binding.dart';
 import '../modules/cart/bindings/cart_binding.dart';
 import '../modules/cart/views/cart_view.dart';
 import '../modules/cart/views/cart_view.dart';
+import '../modules/home/bindings/detail_message_binding.dart';
 import '../modules/home/bindings/home_binding.dart';
 import '../modules/home/bindings/main_binding.dart';
 import '../modules/home/views/chat/chat_detail_view.dart';
@@ -45,17 +46,17 @@ class AppPages {
     ),
     GetPage(
       name: _Paths.MAIN,
-      page: () => const MainView(),
+      page: () => MainView(),
       binding: MainBinding(),
     ),
     GetPage(
       name: _Paths.HOME,
-      page: () => const HomeView(),
+      page: () => HomeView(),
       binding: HomeBinding(),
     ),
     GetPage(
       name: _Paths.CART,
-      page: () => const CartView(),
+      page: () => CartView(),
       binding: CartBinding(),
     ),
     GetPage(
@@ -65,13 +66,13 @@ class AppPages {
     ),
     GetPage(
       name: _Paths.CHAT,
-      page: () => (ChatView()),
-      binding: MessageBinding(),
+      page: () => (ChatPage()),
+      binding: ChatBinding(),
     ),
     GetPage(
       name: _Paths.CHATDETAIL,
-      page: () => (ChatDetailView()),
-      binding: MessageBinding(),
+      page: () => (DetailChatView()),
+      binding: ChatDetailBinding(),
     ),
   ];
 }

@@ -1,15 +1,14 @@
 import 'package:get/get.dart';
-import 'package:veggiefresh/app/modules/auth/controllers/auth_controller.dart';
-import 'package:veggiefresh/app/modules/home/controllers/message_controller.dart';
+import '../../../data/repositories/message_service.dart';
 
-class MessageBinding extends Bindings {
+import '../controllers/message_controller.dart';
+
+class ChatBinding extends Bindings {
   @override
   void dependencies() {
+    Get.lazyPut<MessageRepository>(() => MessageRepository());
     Get.lazyPut<ChatController>(
-      () => ChatController(),
-    );
-    Get.lazyPut<AuthController>(
-      () => AuthController(),
+      () => ChatController(messageRepository: Get.find<MessageRepository>()),
     );
   }
 }

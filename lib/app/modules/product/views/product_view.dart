@@ -362,7 +362,8 @@ class ProductView extends GetView<ProductController> {
                 children: [
                   GestureDetector(
                     onTap: () {
-                      Get.toNamed('/chat', arguments: controller.product);
+                      Get.toNamed('/chat-detail',
+                          arguments: controller.product);
                     },
                     child: Container(
                       width: 54,

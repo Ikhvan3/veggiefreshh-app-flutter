@@ -1,15 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-
 import '../models/message_model.dart';
 import '../models/product_model.dart';
 import '../models/user_model.dart';
 
-class MessageService {
-  FirebaseFirestore firestore = FirebaseFirestore.instance;
+class MessageRepository {
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   Stream<List<MessageModel>> getMessageByUserId({int? userId}) {
     try {
-      return firestore
+      return _firestore
           .collection('messages')
           .where('userId', isEqualTo: userId)
           .snapshots()
@@ -25,20 +24,20 @@ class MessageService {
         return result;
       });
     } catch (e) {
-      throw Exception('Failed to get messages');
+      throw Exception('Gagal mengambil pesan');
     }
   }
 
   Future<void> addMessage({
-    UserModel? user,
-    bool? isFromUser,
-    String? message,
+    required UserModel user,
+    required bool isFromUser,
+    required String message,
     ProductModel? product,
   }) async {
     try {
-      await firestore.collection('messages').add({
+      await _firestore.collection('messages').add({
         'message': message,
-        'userId': user!.id,
+        'userId': user.id,
         'userName': user.name,
         'userImage': user.profilePhotoUrl,
         'isFromUser': isFromUser,
@@ -48,7 +47,7 @@ class MessageService {
         'updatedAt': DateTime.now().toString(),
       });
     } catch (e) {
-      throw Exception('Failed to send message');
+      throw Exception('Pesan Gagal Dikirim!');
     }
   }
 }

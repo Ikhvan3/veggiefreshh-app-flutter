@@ -48,7 +48,7 @@ class CartView extends GetView<CartController> {
               width: 154,
               height: 44,
               child: TextButton(
-                onPressed: () => Get.offAllNamed('/home'),
+                onPressed: () => Get.offAllNamed('/main'),
                 style: TextButton.styleFrom(
                   backgroundColor: primaryColor,
                   shape: RoundedRectangleBorder(

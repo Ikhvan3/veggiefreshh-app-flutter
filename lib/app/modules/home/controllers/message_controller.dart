@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../data/models/message_model.dart';
 import '../../../data/models/product_model.dart';
@@ -6,42 +5,28 @@ import '../../../data/models/user_model.dart';
 import '../../../data/repositories/message_service.dart';
 
 class ChatController extends GetxController {
-  final MessageService _messageService = MessageService();
-  final messageController = TextEditingController();
+  final MessageRepository messageRepository;
 
-  var messages = <MessageModel>[].obs;
-  var product = UninitializedProductModel().obs;
+  ChatController({required this.messageRepository});
 
-  Stream<List<MessageModel>> getMessages(int userId) {
-    return _messageService.getMessageByUserId(userId: userId);
+  final RxInt currentIndex = 0.obs;
+  final Rx<UserModel?> user = Rx<UserModel?>(null);
+
+  Stream<List<MessageModel>> getMessages() {
+    return messageRepository.getMessageByUserId(userId: user.value?.id);
   }
 
   Future<void> sendMessage({
-    required UserModel user,
     required String message,
     ProductModel? product,
   }) async {
-    try {
-      await _messageService.addMessage(
-        user: user,
-        isFromUser: true,
-        message: message,
-        product: product,
-      );
-      messageController.clear();
-      if (product != null) {
-        this.product.value = UninitializedProductModel();
-      }
-    } catch (e) {
-      Get.snackbar(
-        'Error',
-        'Failed to send message',
-        snackPosition: SnackPosition.BOTTOM,
-      );
-    }
-  }
+    if (user.value == null) return;
 
-  void clearProduct() {
-    product.value = UninitializedProductModel();
+    await messageRepository.addMessage(
+      user: user.value!,
+      isFromUser: true,
+      message: message,
+      product: product,
+    );
   }
 }

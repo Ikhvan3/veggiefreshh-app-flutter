@@ -18,6 +18,10 @@ class ChatBubble extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Widget productPreview() {
+      if (product == null || product is UninitializedProductModel) {
+        return SizedBox.shrink();
+      }
+
       return Container(
         width: 237,
         margin: EdgeInsets.only(bottom: 12),
@@ -36,19 +40,21 @@ class ChatBubble extends StatelessWidget {
           children: [
             Row(
               children: [
-                if (product!.galleries!.isNotEmpty)
+                if (product!.galleries != null &&
+                    product!.galleries!.isNotEmpty)
                   ClipRRect(
                     borderRadius: BorderRadius.circular(12),
                     child: Image.network(
-                      product!.galleries![0].url!,
+                      product!.galleries![0].url ??
+                          '', // Pastikan url tidak null
                       width: 60,
                       height: 60,
                       fit: BoxFit.cover,
                       errorBuilder: (context, error, stackTrace) {
-                        print('Error loading image: $error');
                         return Image.asset(
                           'assets/image_shoes.png',
-                          width: 70,
+                          width: 60,
+                          height: 60,
                           fit: BoxFit.cover,
                         );
                       },
@@ -65,22 +71,18 @@ class ChatBubble extends StatelessWidget {
                     height: 60,
                     fit: BoxFit.cover,
                   ),
-                SizedBox(
-                  width: 8,
-                ),
+                SizedBox(width: 8),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        product!.name!,
+                        product?.name ?? 'Unknown', // Pastikan nama tidak null
                         style: primaryTextStyle,
                       ),
-                      SizedBox(
-                        height: 4,
-                      ),
+                      SizedBox(height: 4),
                       Text(
-                        '\$${product!.price}',
+                        '\$${product?.price ?? '0'}', // Pastikan harga tidak null
                         style: priceTextStyle.copyWith(
                           fontWeight: medium,
                         ),
@@ -90,9 +92,7 @@ class ChatBubble extends StatelessWidget {
                 ),
               ],
             ),
-            SizedBox(
-              height: 20,
-            ),
+            SizedBox(height: 20),
             Row(
               children: [
                 OutlinedButton(
@@ -110,9 +110,7 @@ class ChatBubble extends StatelessWidget {
                     style: purpleTextStyle,
                   ),
                 ),
-                SizedBox(
-                  width: 8,
-                ),
+                SizedBox(width: 8),
                 TextButton(
                   onPressed: () {},
                   style: TextButton.styleFrom(
@@ -139,14 +137,12 @@ class ChatBubble extends StatelessWidget {
 
     return Container(
       width: double.infinity,
-      margin: EdgeInsets.only(
-        top: 30,
-      ),
+      margin: EdgeInsets.only(top: 30),
       child: Column(
         crossAxisAlignment:
             isSender ? CrossAxisAlignment.end : CrossAxisAlignment.start,
         children: [
-          product is UninitializedProductModel ? SizedBox() : productPreview(),
+          productPreview(),
           Row(
             mainAxisAlignment:
                 isSender ? MainAxisAlignment.end : MainAxisAlignment.start,

@@ -24,6 +24,8 @@ class UserModel {
     token = json['token'];
   }
 
+  get value => null;
+
   Map<String, dynamic> toJson() {
     return {
       'id': id,

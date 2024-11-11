@@ -13,7 +13,7 @@ class ChatTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Get.to(() => ChatDetailView());
+        Get.to(() => DetailChatView());
       },
       child: Container(
         margin: EdgeInsets.only(top: 33),

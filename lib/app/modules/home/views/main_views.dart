@@ -115,7 +115,7 @@ class MainView extends GetView<MainController> {
             index: controller.currentIndex.value,
             children: [
               HomeView(),
-              ChatView(),
+              ChatPage(),
               WishlistView(),
               ProfileView(),
             ],
